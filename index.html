@@ -1210,6 +1210,20 @@ Ready or Not: ~80h (stacking/room clearing, slower CQB play)."></textarea>
         return `<t:${unixTs}:t>`;
     }
 
+    function getAutoTimezoneLabel() {
+        let zone = "Local";
+        try {
+            zone = Intl.DateTimeFormat().resolvedOptions().timeZone || "Local";
+        } catch (_) {}
+
+        const offsetMinutes = -new Date().getTimezoneOffset();
+        const sign = offsetMinutes >= 0 ? "+" : "-";
+        const abs = Math.abs(offsetMinutes);
+        const hh = String(Math.floor(abs / 60)).padStart(2, "0");
+        const mm = String(abs % 60).padStart(2, "0");
+        return `${zone} (UTC${sign}${hh}:${mm})`;
+    }
+
     function buildQ6AvailabilityLine() {
         const ranges = getQ6Ranges();
         return ranges.map((r) => {
@@ -1395,7 +1409,8 @@ Ready or Not: ~80h (stacking/room clearing, slower CQB play)."></textarea>
 
         const q6Ranges = buildQ6AvailabilityLine();
         const q6Note = sanitizeValue(el("q6Note").value);
-        lines.push(`\`6\` ${q6Ranges.join("; ")}${q6Note ? `; ${q6Note}` : ""}`);
+        const q6Timezone = getAutoTimezoneLabel();
+        lines.push(`\`6\` ${q6Ranges.join("; ")}; TZ: ${q6Timezone}${q6Note ? `; ${q6Note}` : ""}`);
 
         const q7Mods = getCheckedValues("q7Mods");
         const q7Note = sanitizeValue(el("q7Note").value);
