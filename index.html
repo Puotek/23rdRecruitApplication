@@ -1,0 +1,1773 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Arma 3 Application Formatter</title>
+    <style>
+        :root {
+            --bg: #0f1012;
+            --panel: #141518;
+            --panel-2: #101114;
+            --panel-3: #1a1c20;
+            --text: #f4f5f7;
+            --muted: #b5bac1;
+            --border: #2b2d31;
+            --accent: #5865f2;
+            --accent-2: #6e79f5;
+            --error: #f23f43;
+            --ok: #3ba55d;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: "gg sans", "Noto Sans", "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.45;
+        }
+
+        .wrap {
+            max-width: 980px;
+            margin: 22px auto;
+            padding: 0 16px 30px;
+        }
+
+        h1 {
+            font-size: 1.32rem;
+            margin: 0 0 8px;
+            font-weight: 700;
+            letter-spacing: 0;
+        }
+
+        p.note {
+            color: var(--muted);
+            margin: 0 0 14px;
+            font-size: 0.86rem;
+        }
+
+        .discord-mention {
+            display: inline;
+            padding: 0 2px;
+            border-radius: 3px;
+            background: rgba(88, 101, 242, 0.34);
+            color: #d7dbff;
+            font-weight: 500;
+            text-decoration: none;
+            line-height: 1.25;
+        }
+
+        .discord-mention:hover {
+            background: rgba(88, 101, 242, 0.46);
+            color: #ffffff;
+            text-decoration: none;
+        }
+
+        .card {
+            background: var(--panel);
+            border: 1px solid #222429;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 14px;
+            box-shadow: 0 10px 24px rgba(0, 0, 0, 0.22);
+        }
+
+        .row {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .field > div {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            position: relative;
+            padding-right: 0;
+        }
+
+        label {
+            display: block;
+            font-weight: 700;
+            font-size: 1rem;
+            letter-spacing: 0;
+            text-transform: none;
+            margin-bottom: 0;
+            color: #f2f3f5;
+        }
+
+        .desc {
+            display: block;
+            color: var(--muted);
+            font-weight: 400;
+            margin-top: 0;
+            font-size: 0.9rem;
+            line-height: 1.35;
+        }
+
+        .field > div > .desc {
+            order: 2;
+        }
+
+        .field > div > input,
+        .field > div > textarea,
+        .field > div > .checkbox-wrap,
+        .field > div > .option-grid,
+        .field > div > .pill-group,
+        .field > div > .plain-options,
+        .field > div > .agree-line,
+        .field > div > .availability-grid,
+        .field > div > .input-clear-wrap,
+        .field > div > .discord-select,
+        .field > div > select {
+            order: 3;
+        }
+
+        .field > div > .error {
+            order: 4;
+            margin-top: 0;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        input[type="time"],
+        select,
+        textarea {
+            width: 100%;
+            background: var(--panel-2);
+            color: var(--text);
+            border: 1px solid #2f3136;
+            border-radius: 8px;
+            padding: 10px 12px;
+            font: inherit;
+            transition: border-color 120ms ease, box-shadow 120ms ease, background-color 120ms ease;
+        }
+
+        select {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            padding-right: 40px;
+            background-image: linear-gradient(45deg, transparent 50%, var(--muted) 50%),
+            linear-gradient(135deg, var(--muted) 50%, transparent 50%);
+            background-position: calc(100% - 18px) calc(50% - 2px),
+            calc(100% - 13px) calc(50% - 2px);
+            background-size: 6px 6px, 6px 6px;
+            background-repeat: no-repeat;
+        }
+
+        select:hover {
+            border-color: #4b4e57;
+            background-color: #17191d;
+        }
+
+        select:focus {
+            background-image: linear-gradient(45deg, transparent 50%, #d3d7de 50%),
+            linear-gradient(135deg, #d3d7de 50%, transparent 50%);
+        }
+
+        .discord-select {
+            position: relative;
+        }
+
+        .discord-select-trigger {
+            width: 100%;
+            min-height: 42px;
+            border: 1px solid #2f3136;
+            border-radius: 8px;
+            background: var(--panel-2);
+            color: var(--text);
+            padding: 10px 38px 10px 12px;
+            font: inherit;
+            text-align: left;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .discord-select-trigger::after {
+            content: "";
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            width: 8px;
+            height: 8px;
+            border-right: 2px solid var(--muted);
+            border-bottom: 2px solid var(--muted);
+            transform: translateY(-70%) rotate(45deg);
+            transition: transform 120ms ease;
+        }
+
+        .discord-select.open .discord-select-trigger::after {
+            transform: translateY(-35%) rotate(-135deg);
+        }
+
+        .discord-select-trigger:hover {
+            border-color: #4b4e57;
+            background: #17191d;
+        }
+
+        .discord-select.open .discord-select-trigger,
+        .discord-select-trigger:focus-visible {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(88, 101, 242, 0.26);
+        }
+
+        .discord-select-menu {
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: calc(100% + 6px);
+            background: #101114;
+            border: 1px solid #2f3136;
+            border-radius: 8px;
+            box-shadow: 0 10px 24px rgba(0, 0, 0, 0.28);
+            padding: 4px;
+            z-index: 20;
+            display: none;
+        }
+
+        .discord-select.open .discord-select-menu {
+            display: block;
+        }
+
+        .discord-select-option {
+            width: 100%;
+            border: none;
+            background: transparent;
+            color: var(--text);
+            text-align: left;
+            padding: 8px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            font: inherit;
+        }
+
+        .discord-select-option:hover {
+            background: #1b1d22;
+            filter: none;
+        }
+
+        textarea {
+            min-height: 42px;
+            resize: none;
+            overflow: hidden;
+        }
+
+        input:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(88, 101, 242, 0.26);
+        }
+
+        .field.invalid input:focus,
+        .field.invalid textarea:focus,
+        .field.invalid select:focus {
+            border-color: var(--error) !important;
+            box-shadow: 0 0 0 3px rgba(242, 63, 67, 0.24);
+        }
+
+        .field.invalid input,
+        .field.invalid textarea,
+        .field.invalid .checkbox-wrap,
+        .field.invalid .pill-group,
+        .field.invalid .plain-options,
+        .field.invalid .availability-grid {
+            border-color: var(--error) !important;
+            outline-color: rgba(255, 107, 107, 0.25);
+        }
+
+        .error {
+            color: var(--error);
+            font-size: 0.82rem;
+            margin-top: 6px;
+            min-height: 1.1em;
+            font-weight: 600;
+        }
+
+        .checkbox-wrap {
+            background: var(--panel-2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 10px 12px;
+        }
+
+        .checkbox-line {
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+        }
+
+        .checkbox-line input[type="checkbox"] {
+            margin-top: 3px;
+            transform: scale(1.15);
+            accent-color: var(--accent);
+            flex: 0 0 auto;
+        }
+
+        .checkbox-line label {
+            margin: 0;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .option-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+            gap: 8px;
+        }
+
+        .pill-group {
+            display: flex;
+            flex-wrap: nowrap;
+            gap: 6px;
+            overflow-x: auto;
+            padding-bottom: 2px;
+        }
+
+        .pill-input {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .pill {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--border);
+            border-radius: 999px;
+            padding: 6px 10px;
+            font-size: 0.86rem;
+            color: var(--muted);
+            background: transparent;
+            user-select: none;
+            cursor: pointer;
+            white-space: nowrap;
+            min-width: 0;
+        }
+
+        .pill-input:checked + .pill {
+            border-color: var(--accent);
+            color: var(--text);
+            background: rgba(106, 166, 255, 0.15);
+        }
+
+        .availability-grid {
+            border: 1px solid #2f3136;
+            border-radius: 8px;
+            background: var(--panel-2);
+            padding: 8px;
+            overflow: visible;
+            max-height: none;
+        }
+
+        .availability-table {
+            min-width: 0;
+        }
+
+        .availability-header,
+        .availability-row {
+            display: grid;
+            grid-template-columns: 56px repeat(7, minmax(62px, 1fr));
+            gap: 4px;
+            align-items: center;
+            margin-bottom: 4px;
+        }
+
+        .availability-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .availability-label,
+        .availability-hour {
+            font-size: 0.72rem;
+            color: var(--muted);
+            text-align: center;
+            user-select: none;
+        }
+
+        .availability-label {
+            text-align: left;
+            font-size: 0.72rem;
+            color: var(--muted);
+            padding-left: 2px;
+        }
+
+        .availability-cell {
+            height: 20px;
+            border-radius: 4px;
+            border: 1px solid #31343b;
+            background: #1b1d22;
+            cursor: pointer;
+            padding: 0;
+            transition: background-color 80ms ease, border-color 80ms ease;
+        }
+
+        .availability-cell.active {
+            border-color: var(--accent);
+            background: rgba(88, 101, 242, 0.52);
+        }
+
+        .plain-options {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+            padding: 2px 0;
+        }
+
+        .plain-option {
+            position: relative;
+            width: 100%;
+        }
+
+        .plain-option input[type="checkbox"] {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .plain-option label {
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            border: none;
+            background: transparent;
+            padding: 5px 0;
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--text);
+            cursor: pointer;
+            transition: color 120ms ease;
+        }
+
+        .plain-option label::before {
+            content: "";
+            width: 20px;
+            height: 20px;
+            flex: 0 0 20px;
+            border-radius: 4px;
+            border: 1px solid #7f8590;
+            background: transparent;
+            box-sizing: border-box;
+            transition: all 120ms ease;
+        }
+
+        .plain-option label:hover {
+            color: #ffffff;
+        }
+
+        .plain-option input[type="checkbox"]:checked + label {
+            color: #ffffff;
+        }
+
+        .plain-option input[type="checkbox"]:checked + label::before {
+            border-color: #5865f2;
+            background: #5865f2;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='white' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4.5 10.5l3.3 3.3 7.2-7.2'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: 13px 13px;
+        }
+
+        .agree-line {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 2px 0;
+        }
+
+        .agree-input {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .agree-tag {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 96px;
+            min-height: 30px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--panel-3);
+            color: var(--muted);
+            font-size: 0.86rem;
+            font-weight: 600;
+            cursor: pointer;
+            user-select: none;
+            padding: 0 10px;
+        }
+
+        .agree-input:checked + .agree-tag {
+            border-color: #58cf7b;
+            background: rgba(88, 207, 123, 0.2);
+            color: #d2ffe0;
+        }
+
+        .input-clear-wrap {
+            position: relative;
+        }
+
+        .input-clear-wrap > input,
+        .input-clear-wrap > textarea {
+            padding-right: 34px;
+        }
+
+        .inline-clear-btn {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            border: none;
+            background: transparent;
+            color: transparent;
+            font-size: 0;
+            font-weight: 600;
+            line-height: 1;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            opacity: 0.72;
+            transition: background-color 120ms ease, color 120ms ease, opacity 120ms ease;
+        }
+
+        .input-clear-wrap > textarea + .inline-clear-btn {
+            top: 8px;
+            transform: none;
+        }
+
+        .input-clear-wrap.has-value .inline-clear-btn {
+            display: inline-flex;
+        }
+
+        .inline-clear-btn:hover {
+            background: #2c2f36;
+            opacity: 1;
+            filter: none;
+        }
+
+        .input-clear-wrap:focus-within .inline-clear-btn {
+            opacity: 1;
+        }
+
+        .inline-clear-btn::before {
+            content: "";
+            width: 16px;
+            height: 16px;
+            display: block;
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: contain;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23b5bac1' stroke-width='2.4' stroke-linecap='round'%3E%3Cpath d='M6 6l12 12M18 6l-12 12'/%3E%3C/svg%3E");
+        }
+
+        .inline-clear-btn:hover::before,
+        .input-clear-wrap:focus-within .inline-clear-btn::before {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23f2f3f5' stroke-width='2.4' stroke-linecap='round'%3E%3Cpath d='M6 6l12 12M18 6l-12 12'/%3E%3C/svg%3E");
+        }
+
+        .actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 8px;
+        }
+
+        button {
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 9px 12px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+
+        button.secondary {
+            background: #1b1d22;
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        button:hover {
+            filter: brightness(1.08);
+        }
+
+        .out-header {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 8px;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #1b1d22;
+            border: 1px solid var(--border);
+            color: var(--muted);
+            border-radius: 8px;
+            padding: 5px 10px;
+            font-size: 0.8rem;
+        }
+
+        .chunk {
+            margin-bottom: 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+            background: #1b1d22;
+        }
+
+        .chunk-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+            padding: 7px 9px;
+            border-bottom: 1px solid var(--border);
+            background: #16181c;
+            font-size: 0.82rem;
+        }
+
+        .chunk-top .meta {
+            color: var(--muted);
+        }
+
+        .chunk pre {
+            margin: 0;
+            padding: 10px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+            font-size: 0.86rem;
+            color: #eef0f2;
+        }
+
+        .small {
+            color: var(--muted);
+            font-size: 0.9rem;
+            margin-top: 8px;
+        }
+
+        .out-note {
+            color: var(--muted);
+            font-size: 0.9rem;
+            margin: 0 0 10px;
+        }
+
+        .scale-wrap {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .scale-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: var(--muted);
+            font-size: 0.85rem;
+        }
+
+        .scale-value {
+            color: var(--text);
+            font-weight: 700;
+        }
+
+        .q10-boxes {
+            display: grid;
+            grid-template-columns: repeat(10, minmax(0, 1fr));
+            gap: 6px;
+        }
+
+        .q10-box {
+            height: 34px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: transparent;
+            color: var(--muted);
+            font-weight: 600;
+            cursor: pointer;
+            padding: 0;
+        }
+
+        .q10-box:hover {
+            border-color: #4b4e57;
+            background: rgba(255, 255, 255, 0.03);
+            color: var(--text);
+            filter: none;
+        }
+
+        .q10-box.active {
+            border-color: var(--accent);
+            background: rgba(106, 166, 255, 0.16);
+            color: var(--text);
+        }
+
+        .bottom-error {
+            color: var(--error);
+            font-size: 0.95rem;
+            margin-top: 8px;
+            font-weight: 600;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        code {
+            background: #1b1d22;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 1px 6px;
+        }
+    </style>
+</head>
+<body>
+<div class="wrap">
+    <h1>23rd Special Tactics Squadron - Recruitment Application</h1>
+    <p class="note">
+        Please fill all questions thoroughly than copy the generated output and send it in your recruitment ticket. Your generated answers may be split into multiple messages due to Discord message limit (2000 characters).
+        <br/> If you encountered any errors or would like to give feedback please contact
+        <a class="discord-mention" href="https://discord.com/users/291967371646599169" target="_blank" rel="noopener noreferrer">@Puotek</a>
+        on Discord or create an issue on
+        <a href="https://github.com/Puotek/23rdRecruitApplication/issues" target="_blank" rel="noopener noreferrer">GitHub Issues</a>.
+    </p>
+
+    <form id="appForm" class="card" onsubmit="return false;" novalidate>
+        <!-- Q0 Name -->
+        <div class="row field" id="field-q0">
+            <div>
+                <label for="q0">What name would you like to use?</label>
+                <div class="input-clear-wrap" data-inline-wrap="q0">
+                    <input id="q0" type="text" maxlength="32" placeholder="J. Smith"/>
+                    <button type="button" class="inline-clear-btn" data-inline-clear="q0" aria-label="Clear nickname">
+                        &times;
+                    </button>
+                </div>
+                <span class="desc">Please choose a nickname in the <code>A. Name</code> format (max 32 characters) (you can update your discord nickname as well)</span>
+                <div class="error" id="err-q0"></div>
+            </div>
+        </div>
+
+        <!-- Q1 -->
+        <div class="row field" id="field-q1">
+            <div>
+                <label for="q1">What is your SteamID64?</label>
+                <div class="input-clear-wrap" data-inline-wrap="q1">
+                    <input id="q1" type="text" inputmode="numeric" maxlength="17" placeholder="76561198000000000"/>
+                    <button type="button" class="inline-clear-btn" data-inline-clear="q1" aria-label="Clear SteamID">
+                        &times;
+                    </button>
+                </div>
+                <span class="desc">
+            Find it here:
+            <a href="https://store.steampowered.com/account/" target="_blank" rel="noopener noreferrer">store.steampowered.com/account/</a>
+            • Alternative:
+            <a href="https://steamid.io/" target="_blank" rel="noopener noreferrer">steamid.io</a>
+          </span>
+                <div class="error" id="err-q1"></div>
+            </div>
+        </div>
+
+        <!-- Q2 -->
+        <div class="row field" id="field-q2">
+            <div>
+                <label for="q2">How many hours do you have in Arma 3?</label>
+                <div class="input-clear-wrap" data-inline-wrap="q2">
+                    <input id="q2" type="number" min="0" step="1" placeholder="1800"/>
+                    <button type="button" class="inline-clear-btn" data-inline-clear="q2" aria-label="Clear hours">
+                        &times;
+                    </button>
+                </div>
+                <span class="desc">Rounded whole number</span>
+                <div class="error" id="err-q2"></div>
+            </div>
+        </div>
+
+        <!-- Q3 -->
+        <div class="row field" id="field-q3">
+            <div>
+                <label for="q3">Please fully describe your Arma 3 experience</label>
+                <div class="input-clear-wrap" data-inline-wrap="q3">
+                    <textarea id="q3"
+                              placeholder="A3 since 2018. Unit history: casual infantry unit (Rifleman/AR, ~8 months, casual), semi-serious mechanized unit (FTL/SL, ~1 year, semi-serious), serious rotary-focused unit (crew chief/medic, ~6 months, serious). Public modes: lots of I&amp;A (mostly rifleman/medic/SL), some KOH (infantry/vehicle crew), Mike Force (team leader/medic), Public Zeus (player and occasional Zeus helper). Comfortable with infantry tactics, basic leadership, comms discipline, and medical workflow."></textarea>
+                    <button type="button" class="inline-clear-btn" data-inline-clear="q3" aria-label="Clear question 3">
+                        &times;
+                    </button>
+                </div>
+                <span class="desc">Include unit history (short unit description + role + duration + serious/casual) and overall experience (KOH / I&amp;A / Mike Force / Public Zeus, how much, and what roles).</span>
+                <div class="error" id="err-q3"></div>
+            </div>
+        </div>
+
+        <!-- Q4 -->
+        <div class="row field" id="field-q4">
+            <div>
+                <label for="q4">Are you currently in any Arma 3 units?</label>
+                <div class="input-clear-wrap" data-inline-wrap="q4">
+                    <textarea id="q4"
+                              placeholder="Not currently in any Arma 3 unit. Previously left on good terms. No current dual-clanning restrictions."></textarea>
+                    <button type="button" class="inline-clear-btn" data-inline-clear="q4" aria-label="Clear question 4">
+                        &times;
+                    </button>
+                </div>
+                <span class="desc">If no: <code>I'm not actively in any Arma 3 unit.</code>
+                    <br/>If yes, for each unit:
+                    <br/>- list the schedule when they play
+                    <br/>- how active you are there
+                    <br/>- what position do you fill
+                    <br/>- do they prohibit dual-clanning
+                </span>
+                <div class="error" id="err-q4"></div>
+            </div>
+        </div>
+
+        <div class="row field" id="field-q4dual">
+            <div>
+                <span class="desc">None of the units I'm actively in is against dual-clanning.</span>
+                <div class="agree-line">
+                    <input id="q4dual" type="checkbox" class="agree-input"/>
+                    <label for="q4dual" class="agree-tag">I confirm</label>
+                </div>
+                <div class="error" id="err-q4dual"></div>
+            </div>
+        </div>
+
+        <!-- Q5 -->
+        <div class="row field" id="field-q5">
+            <div>
+                <label for="q5">Briefly describe your experience with other milsim games besides Arma 3</label>
+                <div class="input-clear-wrap" data-inline-wrap="q5">
+                    <textarea id="q5" placeholder="Squad: ~300h (rifleman/medic/FTL,coordinated public play).
+Reforger: ~120h (infantry, radio use, modded servers).
+Ready or Not: ~80h (stacking/room clearing, slower CQB play)."></textarea>
+                    <button type="button" class="inline-clear-btn" data-inline-clear="q5" aria-label="Clear question 5">
+                        &times;
+                    </button>
+                </div>
+                <span class="desc">Reforger / Squad / RoN (hours, roles, seriousness, etc.).</span>
+                <div class="error" id="err-q5"></div>
+            </div>
+        </div>
+
+        <!-- Q6 -->
+        <div class="row field" id="field-q6">
+            <div>
+                <label>Weekly availability (local time)</label>
+                <span class="desc">Select a generic weekly schedule (30-minute blocks). Click or click-and-drag to mark available time.</span>
+                <div class="availability-grid" id="q6Grid">
+                    <div class="availability-table" id="q6Table"></div>
+                </div>
+                <div class="input-clear-wrap" data-inline-wrap="q6Note">
+                    <textarea id="q6Note" aria-label="Question 6 optional note" placeholder="Optional note: exceptions, weeks you are busy, etc."></textarea>
+                    <button type="button" class="inline-clear-btn" data-inline-clear="q6Note" aria-label="Clear note">
+                        &times;
+                    </button>
+                </div>
+                <div class="error" id="err-q6"></div>
+            </div>
+        </div>
+
+        <!-- Q7 -->
+        <div class="row field" id="field-q7">
+            <div>
+                <label>What gameplay-affecting mods have you played with?</label>
+                <span class="desc">Select all mods you are familiar with. You can describe the extent of you knowledge in the note or mentioned additional mods.</span>
+                <div class="plain-options" id="q7ModsWrap">
+                    <div class="plain-option"><input id="q7Mod-ace" name="q7Mods" type="checkbox" value="ACE"/><label
+                            for="q7Mod-ace">ACE</label></div>
+                    <div class="plain-option"><input id="q7Mod-tfar" name="q7Mods" type="checkbox" value="TFAR"/><label
+                            for="q7Mod-tfar">TFAR</label></div>
+                    <div class="plain-option"><input id="q7Mod-acre" name="q7Mods" type="checkbox" value="ACRE"/><label
+                            for="q7Mod-acre">ACRE</label></div>
+                    <div class="plain-option"><input id="q7Mod-acm" name="q7Mods" type="checkbox" value="ACM"/><label
+                            for="q7Mod-acm">ACM</label></div>
+                    <div class="plain-option"><input id="q7Mod-kat" name="q7Mods" type="checkbox" value="KAT"/><label
+                            for="q7Mod-kat">KAT</label></div>
+                    <div class="plain-option"><input id="q7Mod-ade" name="q7Mods" type="checkbox" value="ADE"/><label
+                            for="q7Mod-ade">ADE</label></div>
+                    <div class="plain-option"><input id="q7Mod-iedd" name="q7Mods" type="checkbox" value="IEDD"/><label
+                            for="q7Mod-iedd">IEDD</label></div>
+                    <div class="plain-option"><input id="q7Mod-itn" name="q7Mods" type="checkbox" value="ITN"/><label
+                            for="q7Mod-itn">ITN</label></div>
+                    <div class="plain-option"><input id="q7Mod-ctab" name="q7Mods" type="checkbox" value="CTAB"/><label
+                            for="q7Mod-ctab">CTAB</label></div>
+                    <div class="plain-option"><input id="q7Mod-hatchet" name="q7Mods" type="checkbox"
+                                                     value="HATCHET"/><label for="q7Mod-hatchet">HATCHET</label></div>
+                </div>
+                <div class="input-clear-wrap" data-inline-wrap="q7Note">
+                    <textarea id="q7Note"
+                              aria-label="Question 7 optional note"
+                              placeholder="Optional note: what you used each mod for, or extra mods not listed."></textarea>
+                    <button type="button" class="inline-clear-btn" data-inline-clear="q7Note" aria-label="Clear note">
+                        &times;
+                    </button>
+                </div>
+                <div class="error" id="err-q7"></div>
+            </div>
+        </div>
+
+        <!-- Q8 -->
+        <div class="row field" id="field-q8">
+            <div>
+                <label for="q8">What is your experience with the AFSC you are applying for?</label>
+                <span class="desc">Select AFSC and describe your relevant training/ops exposure and practical confidence for that one role.</span>
+                <input id="q8Afsc" type="hidden" value=""/>
+                <input id="q8AfscName" type="hidden" value=""/>
+                <div class="discord-select" id="q8AfscSelect">
+                    <button type="button" class="discord-select-trigger" id="q8AfscTrigger">Select AFSC</button>
+                    <div class="discord-select-menu">
+                        <button type="button" class="discord-select-option" data-afsc="11HX"
+                                data-afsc-name="Rescue Pilot">11HX - Rescue Pilot
+                        </button>
+                        <button type="button" class="discord-select-option" data-afsc="1Z1X1"
+                                data-afsc-name="Pararescue">1Z1X1 - Pararescue
+                        </button>
+                        <button type="button" class="discord-select-option" data-afsc="1Z2X1"
+                                data-afsc-name="Combat Control">1Z2X1 - Combat Control
+                        </button>
+                        <button type="button" class="discord-select-option" data-afsc="1Z3X1"
+                                data-afsc-name="Tactical Air Control Party">1Z3X1 - Tactical Air Control Party
+                        </button>
+                        <button type="button" class="discord-select-option" data-afsc="1Z4X1"
+                                data-afsc-name="Special Reconnaissance">1Z4X1 - Special Reconnaissance
+                        </button>
+                        <button type="button" class="discord-select-option" data-afsc="44MXG"
+                                data-afsc-name="Pulmonologist">44MXG - Pulmonologist
+                        </button>
+                        <button type="button" class="discord-select-option" data-afsc="44MXB"
+                                data-afsc-name="Cardiologist">44MXB - Cardiologist
+                        </button>
+                        <button type="button" class="discord-select-option" data-afsc="3E8X1"
+                                data-afsc-name="Explosive Ordnance Disposal">3E8X1 - Explosive Ordnance Disposal
+                        </button>
+                        <button type="button" class="discord-select-option" data-afsc="3E9X1"
+                                data-afsc-name="Emergency Management (CBRN)">3E9X1 - Emergency Management (CBRN)
+                        </button>
+                        <button type="button" class="discord-select-option" data-afsc="52RX" data-afsc-name="Chaplain">
+                            52RX - Chaplain
+                        </button>
+                    </div>
+                </div>
+                <div class="input-clear-wrap" data-inline-wrap="q8">
+                    <textarea id="q8" placeholder="Describe your experience for the selected AFSC."></textarea>
+                    <button type="button" class="inline-clear-btn" data-inline-clear="q8" aria-label="Clear question 8">
+                        &times;
+                    </button>
+                </div>
+                <div class="error" id="err-q8"></div>
+            </div>
+        </div>
+
+        <!-- Q9 checkbox -->
+        <div class="row field" id="field-q9">
+            <div>
+                <label>Confirmation</label>
+                <span class="desc">Do you understand how much downtime and how little gameplay you may experience in your AFSC? Are you able to patiently wait for short but intense moments? Are you aware you may go through entire ops as PJ and not be called once?</span>
+                <div class="agree-line">
+                    <input id="q9" type="checkbox" class="agree-input"/>
+                    <label for="q9" class="agree-tag">I agree</label>
+                </div>
+                <div class="error" id="err-q9"></div>
+            </div>
+        </div>
+
+        <!-- Q10 -->
+        <div class="row field" id="field-q10">
+            <div>
+                <label for="q10">How would you describe your English proficiency?</label>
+                <div class="scale-wrap">
+                    <div class="scale-top">
+                        <span>"I no english"</span>
+                        <span class="scale-value"><span id="q10Value">5</span>/10</span>
+                        <span>Fluent and good speaker</span>
+                    </div>
+                    <input id="q10" type="hidden" value="5"/>
+                    <div class="q10-boxes" id="q10Boxes">
+                        <button type="button" class="q10-box" data-q10-score="1">1</button>
+                        <button type="button" class="q10-box" data-q10-score="2">2</button>
+                        <button type="button" class="q10-box" data-q10-score="3">3</button>
+                        <button type="button" class="q10-box" data-q10-score="4">4</button>
+                        <button type="button" class="q10-box" data-q10-score="5">5</button>
+                        <button type="button" class="q10-box" data-q10-score="6">6</button>
+                        <button type="button" class="q10-box" data-q10-score="7">7</button>
+                        <button type="button" class="q10-box" data-q10-score="8">8</button>
+                        <button type="button" class="q10-box" data-q10-score="9">9</button>
+                        <button type="button" class="q10-box" data-q10-score="10">10</button>
+                    </div>
+                </div>
+                <span class="desc">Rate yourself taking into account speaking clarity, how well others understand you, and your comfort with spoken/written comms and briefings.</span>
+                <div class="error" id="err-q10"></div>
+            </div>
+        </div>
+
+        <!-- Q11 checkbox -->
+        <div class="row field" id="field-q11">
+            <div>
+                <label>Confirmation</label>
+                <span class="desc">We will not babysit you. We expect you to take initiative to schedule training and complete your pipeline. Long inactivity without communication or lack of initiative may result in removal. Do you understand?</span>
+                <div class="agree-line">
+                    <input id="q11" type="checkbox" class="agree-input"/>
+                    <label for="q11" class="agree-tag">I agree</label>
+                </div>
+                <div class="error" id="err-q11"></div>
+            </div>
+        </div>
+
+        <!-- Q12 checkbox -->
+        <div class="row field" id="field-q12">
+            <div>
+                <label>Confirmation</label>
+                <span class="desc">As a member, you represent the unit. We expect you to act responsibly and not cause drama, chaos, or ragebait. If you harm the unit or undermine partner units, you will be removed. Are you able to represent the unit properly and handle unpleasant situations in partner units without escalating or adding fuel to the fire, especially in public settings?</span>
+                <div class="agree-line">
+                    <input id="q12" type="checkbox" class="agree-input"/>
+                    <label for="q12" class="agree-tag">I agree</label>
+                </div>
+                <div class="error" id="err-q12"></div>
+            </div>
+        </div>
+    </form>
+
+    <div class="card">
+        <p class="out-note">Copy each message and send it in your recruitment ticket. Please avoid modifing the generated output. If you have additional comments send them as additional messages in your ticket.</p>
+        <div class="actions">
+            <button type="button" class="secondary" id="fillExampleBtn">Fill Example Answers</button>
+        </div>
+        <div class="out-header">
+            <strong>Generated Output</strong>
+            <span class="badge" id="statsBadge">Waiting for all required answers</span>
+        </div>
+
+        <div id="chunksContainer"></div>
+
+        <div class="bottom-error" id="formBottomError">
+            You must answer all required questions to finish.
+        </div>
+    </div>
+</div>
+
+<script>
+    const DISCORD_LIMIT = 2000;
+
+    const textFieldIds = ["q3", "q4", "q5", "q6Note", "q7Note", "q8"];
+    const inlineClearFieldIds = ["q0", "q1", "q2", "q3", "q4", "q5", "q6Note", "q7Note", "q8"];
+    const checkboxIds = ["q4dual", "q9", "q11", "q12"];
+    const allIds = ["q0", "q1", "q2", "q3", "q4", "q4dual", "q5", "q6", "q7", "q8", "q9", "q10", "q11", "q12"];
+
+    const touched = new Set();
+
+    const el = (id) => document.getElementById(id);
+
+    function sanitizeValue(value) {
+        return (value || "")
+            .replace(/\r\n/g, "\n")
+            .replace(/\t/g, " ")
+            .split("\n")
+            .map(line => line.trim().replace(/\s{2,}/g, " "))
+            .join("\n")
+            .replace(/\n{3,}/g, "\n\n")
+            .trim();
+    }
+
+    function autoResizeTextarea(ta) {
+        ta.style.height = "auto";
+        ta.style.height = Math.max(44, ta.scrollHeight) + "px";
+    }
+
+    function autoResizeAll() {
+        textFieldIds.forEach(id => autoResizeTextarea(el(id)));
+    }
+
+    function validateName(value) {
+        const v = sanitizeValue(value);
+        if (!v) return "This field is required.";
+        if (v.length > 32) return "Must be 32 characters or fewer.";
+        const re = /^[A-Z]\.\s[A-Z].*$/;
+        if (!re.test(v)) return "Use format: A. Name (uppercase initial and uppercase first letter after the dot).";
+        return "";
+    }
+
+    function validateSteamID64(value) {
+        const v = sanitizeValue(value);
+        if (!v) return "This field is required.";
+        if (!/^\d+$/.test(v)) return "SteamID64 must contain only numbers.";
+        if (v.length !== 17) return "SteamID64 must be exactly 17 digits.";
+        return "";
+    }
+
+    function validateHours(value) {
+        const v = String(value ?? "").trim();
+        if (!v) return "This field is required.";
+        if (!/^\d+$/.test(v)) return "Please enter a whole number.";
+        return "";
+    }
+
+    function validateRequiredText(value) {
+        const v = sanitizeValue(value);
+        if (!v) return "This field is required.";
+        return "";
+    }
+
+    function getCheckedValues(name) {
+        return Array.from(document.querySelectorAll(`input[name="${name}"]:checked`))
+            .map((node) => node.value);
+    }
+
+    const Q6_DAY_NAMES = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+    const q6SelectedSlots = new Set();
+    const Q6_SLOT_COUNT = 48;
+    let q6IsDragging = false;
+    let q6DragSelectState = true;
+    let q7IsDragging = false;
+    let q7DragSelectState = true;
+
+    function q6SlotKey(dayIndex, slotIndex) {
+        return `${dayIndex}-${slotIndex}`;
+    }
+
+    function isQ6SlotSelected(dayIndex, slotIndex) {
+        return q6SelectedSlots.has(q6SlotKey(dayIndex, slotIndex));
+    }
+
+    function getQ6SelectedCount() {
+        return q6SelectedSlots.size;
+    }
+
+    function getQ6Ranges() {
+        const ranges = [];
+        for (let day = 0; day < 7; day += 1) {
+            const slots = [];
+            for (let slot = 0; slot < Q6_SLOT_COUNT; slot += 1) {
+                if (isQ6SlotSelected(day, slot)) slots.push(slot);
+            }
+            if (slots.length === 0) continue;
+
+            let start = slots[0];
+            let prev = slots[0];
+            for (let i = 1; i < slots.length; i += 1) {
+                const s = slots[i];
+                if (s === prev + 1) {
+                    prev = s;
+                    continue;
+                }
+                ranges.push({day, startSlot: start, endSlotExclusive: prev + 1});
+                start = s;
+                prev = s;
+            }
+            ranges.push({day, startSlot: start, endSlotExclusive: prev + 1});
+        }
+        return ranges;
+    }
+
+    function getNextWeekdayTimestamp(dayIndex, slotIndex) {
+        const now = new Date();
+        const currentDayIndex = (now.getDay() + 6) % 7; // Mon=0
+        const daysAhead = (dayIndex - currentDayIndex + 7) % 7;
+        const target = new Date(now);
+        const hour = Math.floor(slotIndex / 2);
+        const minute = (slotIndex % 2) * 30;
+        target.setHours(hour, minute, 0, 0);
+        target.setDate(target.getDate() + daysAhead);
+
+        if (daysAhead === 0 && target.getTime() <= now.getTime()) {
+            target.setDate(target.getDate() + 7);
+        }
+        return Math.floor(target.getTime() / 1000);
+    }
+
+    function formatDiscordTimeTag(unixTs) {
+        return `<t:${unixTs}:t>`;
+    }
+
+    function buildQ6AvailabilityLine() {
+        const ranges = getQ6Ranges();
+        return ranges.map((r) => {
+            const startTs = getNextWeekdayTimestamp(r.day, r.startSlot);
+            const endTs = getNextWeekdayTimestamp(r.day, r.endSlotExclusive);
+            return `${Q6_DAY_NAMES[r.day]} ${formatDiscordTimeTag(startTs)} - ${formatDiscordTimeTag(endTs)}`;
+        });
+    }
+
+    function renderQ6Grid() {
+        const table = el("q6Table");
+        if (!table) return;
+        table.innerHTML = "";
+
+        const header = document.createElement("div");
+        header.className = "availability-header";
+        const emptyHead = document.createElement("div");
+        emptyHead.className = "availability-label";
+        emptyHead.textContent = "Time";
+        header.appendChild(emptyHead);
+
+        for (let day = 0; day < 7; day += 1) {
+            const head = document.createElement("div");
+            head.className = "availability-hour";
+            head.textContent = Q6_DAY_NAMES[day].slice(0, 3);
+            header.appendChild(head);
+        }
+        table.appendChild(header);
+
+        for (let slot = 0; slot < Q6_SLOT_COUNT; slot += 1) {
+            const row = document.createElement("div");
+            row.className = "availability-row";
+
+            const label = document.createElement("div");
+            label.className = "availability-label";
+            if (slot % 2 === 0) {
+                const h = Math.floor(slot / 2);
+                label.textContent = `${String(h).padStart(2, "0")}:00`;
+            } else {
+                label.textContent = "";
+            }
+            row.appendChild(label);
+
+            for (let dayIndex = 0; dayIndex < 7; dayIndex += 1) {
+                const cell = document.createElement("button");
+                cell.type = "button";
+                cell.className = "availability-cell";
+                if (isQ6SlotSelected(dayIndex, slot)) cell.classList.add("active");
+                cell.dataset.day = String(dayIndex);
+                cell.dataset.slot = String(slot);
+                const h = Math.floor(slot / 2);
+                const m = slot % 2 === 0 ? "00" : "30";
+                cell.title = `${Q6_DAY_NAMES[dayIndex]} ${String(h).padStart(2, "0")}:${m}`;
+                cell.setAttribute("aria-label", cell.title);
+                cell.addEventListener("mousedown", (evt) => {
+                    evt.preventDefault();
+                    const key = q6SlotKey(dayIndex, slot);
+                    q6DragSelectState = !q6SelectedSlots.has(key);
+                    if (q6DragSelectState) q6SelectedSlots.add(key);
+                    else q6SelectedSlots.delete(key);
+                    q6IsDragging = true;
+                    markTouched("q6");
+                    renderOutput();
+                });
+                cell.addEventListener("mouseenter", () => {
+                    if (!q6IsDragging) return;
+                    const key = q6SlotKey(dayIndex, slot);
+                    if (q6DragSelectState) q6SelectedSlots.add(key);
+                    else q6SelectedSlots.delete(key);
+                    markTouched("q6");
+                    renderOutput();
+                });
+                row.appendChild(cell);
+            }
+
+            table.appendChild(row);
+        }
+    }
+
+    function setQ7CheckboxState(node, state) {
+        if (!node || node.checked === state) return;
+        node.checked = state;
+        node.dispatchEvent(new Event("change", {bubbles: true}));
+    }
+
+    function initQ7DragSelection() {
+        document.querySelectorAll("#q7ModsWrap .plain-option").forEach((option) => {
+            const checkbox = option.querySelector('input[type="checkbox"]');
+            if (!checkbox) return;
+
+            option.addEventListener("mousedown", (evt) => {
+                evt.preventDefault();
+                q7DragSelectState = !checkbox.checked;
+                q7IsDragging = true;
+                setQ7CheckboxState(checkbox, q7DragSelectState);
+            });
+
+            option.addEventListener("click", (evt) => {
+                // Prevent native label->checkbox toggle, we already toggle on mousedown.
+                evt.preventDefault();
+            });
+
+            option.addEventListener("mouseenter", () => {
+                if (!q7IsDragging) return;
+                setQ7CheckboxState(checkbox, q7DragSelectState);
+            });
+        });
+    }
+
+    function validateQ6() {
+        if (getQ6SelectedCount() === 0) return "Select at least one availability slot.";
+        return "";
+    }
+
+    function validateQ7() {
+        return "";
+    }
+
+    function validateQ8() {
+        const afsc = String(el("q8Afsc").value || "").trim();
+        const details = sanitizeValue(el("q8").value);
+        if (!afsc) return "Select an AFSC.";
+        if (!details) return "This field is required.";
+        return "";
+    }
+
+    function validateQ10(value) {
+        const n = Number(value);
+        if (!Number.isFinite(n) || n < 1 || n > 10) return "Pick a value from 1 to 10.";
+        return "";
+    }
+
+    function validateCheckbox(checked) {
+        return checked ? "" : "This confirmation is required.";
+    }
+
+    function getFieldError(id) {
+        const node = el(id);
+
+        if (id === "q0") return validateName(node.value);
+        if (id === "q1") return validateSteamID64(node.value);
+        if (id === "q2") return validateHours(node.value);
+        if (id === "q6") return validateQ6();
+        if (id === "q7") return validateQ7();
+        if (id === "q8") return validateQ8();
+        if (id === "q10") return validateQ10(node.value);
+        if (checkboxIds.includes(id)) return validateCheckbox(node.checked);
+        return validateRequiredText(node.value);
+    }
+
+    function setFieldErrorUI(id, message) {
+        const field = el(`field-${id}`);
+        const err = el(`err-${id}`);
+
+        const shouldShow = touched.has(id) && !!message;
+        err.textContent = shouldShow ? message : "";
+        field.classList.toggle("invalid", shouldShow);
+    }
+
+    function validateAllAndRenderErrors() {
+        let allValid = true;
+
+        for (const id of allIds) {
+            const errMsg = getFieldError(id);
+            if (errMsg) allValid = false;
+            setFieldErrorUI(id, errMsg);
+        }
+
+        return allValid;
+    }
+
+    function buildAnswerText() {
+        // Only call this when valid.
+        const lines = [];
+
+        lines.push(`\`${sanitizeValue(el("q0").value)}\` \`${sanitizeValue(el("q1").value)}\` \`${String(el("q2").value).trim()}\`hrs`);
+
+        lines.push(`\`3\` ${sanitizeValue(el("q3").value)}`);
+
+        lines.push(`\`4\` ${sanitizeValue(el("q4").value)}`);
+
+        lines.push(`\`5\` ${sanitizeValue(el("q5").value)}`);
+
+        const q6Ranges = buildQ6AvailabilityLine();
+        const q6Note = sanitizeValue(el("q6Note").value);
+        lines.push(`\`6\` ${q6Ranges.join("; ")}${q6Note ? `; ${q6Note}` : ""}`);
+
+        const q7Mods = getCheckedValues("q7Mods");
+        const q7Note = sanitizeValue(el("q7Note").value);
+        const q7ModsText = q7Mods.length ? q7Mods.join(", ") : "None";
+        lines.push(`\`7\` ${q7ModsText}${q7Note ? `; ${q7Note}` : ""}`);
+
+        const q8Code = sanitizeValue(el("q8Afsc").value);
+        const q8Name = sanitizeValue(el("q8AfscName").value);
+        const q8Role = q8Name ? `\`${q8Code}\` ${q8Name}` : `\`${q8Code}\``;
+        lines.push(`\`8\` ${q8Role}: ${sanitizeValue(el("q8").value)}`);
+
+        lines.push(`\`10\` ${String(el("q10").value).trim()}/10`);
+
+        lines.push(`-# I understood and agreed to all other questions`);
+
+        return lines.join("\n");
+    }
+
+    // Split text by lines while keeping chunks under Discord limit.
+    function splitForDiscordByQuestion(text, limit = DISCORD_LIMIT) {
+        if (!text) return [];
+
+        const blocks = text.split("\n");
+        const chunks = [];
+        let current = "";
+
+        function pushCurrent() {
+            if (current.trim()) chunks.push(current);
+            current = "";
+        }
+
+        function splitOversizedBlock(block) {
+            // Try line-based splitting first
+            const out = [];
+            const lines = block.split("\n");
+            let temp = "";
+
+            for (const line of lines) {
+                const candidate = temp ? `${temp}\n${line}` : line;
+                if (candidate.length <= limit) {
+                    temp = candidate;
+                    continue;
+                }
+
+                if (temp) {
+                    out.push(temp);
+                    temp = "";
+                }
+
+                if (line.length <= limit) {
+                    temp = line;
+                    continue;
+                }
+
+                // Hard split only if a single line is too long (last resort)
+                let remaining = line;
+                while (remaining.length > limit) {
+                    // Prefer splitting on a space before limit
+                    let cut = remaining.lastIndexOf(" ", limit);
+                    if (cut <= 0) cut = limit;
+                    out.push(remaining.slice(0, cut));
+                    remaining = remaining.slice(cut).trimStart();
+                }
+                if (remaining) temp = remaining;
+            }
+
+            if (temp) out.push(temp);
+            return out;
+        }
+
+        for (const block of blocks) {
+            if (!block.trim()) continue;
+
+            if (block.length > limit) {
+                // flush current first, then split this one question block
+                if (current) pushCurrent();
+                const parts = splitOversizedBlock(block);
+                parts.forEach(p => chunks.push(p));
+                continue;
+            }
+
+            const candidate = current ? `${current}\n${block}` : block;
+            if (candidate.length <= limit) {
+                current = candidate;
+            } else {
+                pushCurrent();
+                current = block;
+            }
+        }
+
+        pushCurrent();
+        return chunks;
+    }
+
+    async function copyText(text) {
+        try {
+            await navigator.clipboard.writeText(text);
+            return true;
+        } catch (err) {
+            const ta = document.createElement("textarea");
+            ta.value = text;
+            ta.style.position = "fixed";
+            ta.style.left = "-9999px";
+            document.body.appendChild(ta);
+            ta.focus();
+            ta.select();
+            let ok = false;
+            try {
+                ok = document.execCommand("copy");
+            } catch (_) {
+            }
+            document.body.removeChild(ta);
+            return ok;
+        }
+    }
+
+    function renderOutput() {
+        renderQ6Grid();
+        renderQ10Scale();
+        autoResizeAll();
+        updateInlineClearButtons();
+
+        const allValid = validateAllAndRenderErrors();
+        const container = el("chunksContainer");
+        const stats = el("statsBadge");
+        const bottomError = el("formBottomError");
+
+        container.innerHTML = "";
+
+        if (!allValid) {
+            stats.textContent = "Waiting for all required answers";
+            bottomError.classList.remove("hidden");
+            return;
+        }
+
+        const text = buildAnswerText();
+        const chunks = splitForDiscordByQuestion(text, DISCORD_LIMIT);
+
+        chunks.forEach((chunk, index) => {
+            const wrapper = document.createElement("div");
+            wrapper.className = "chunk";
+
+            const top = document.createElement("div");
+            top.className = "chunk-top";
+
+            const left = document.createElement("div");
+            left.className = "meta";
+            left.textContent = `Message ${index + 1}/${chunks.length} • ${chunk.length}/${DISCORD_LIMIT} chars`;
+
+            const btn = document.createElement("button");
+            btn.type = "button";
+            btn.className = "secondary";
+            btn.textContent = "Copy";
+            btn.style.padding = "6px 10px";
+            btn.style.fontSize = "0.85rem";
+
+            btn.addEventListener("click", async () => {
+                const ok = await copyText(chunk);
+                btn.textContent = ok ? "Copied!" : "Copy failed";
+                setTimeout(() => (btn.textContent = "Copy"), 1200);
+            });
+
+            top.appendChild(left);
+            top.appendChild(btn);
+
+            const pre = document.createElement("pre");
+            pre.textContent = chunk;
+
+            wrapper.appendChild(top);
+            wrapper.appendChild(pre);
+            container.appendChild(wrapper);
+        });
+
+        stats.textContent = `${chunks.length} message(s) • Total ${text.length} chars • Limit ${DISCORD_LIMIT}`;
+        bottomError.classList.add("hidden");
+    }
+
+    function markTouched(id) {
+        touched.add(id);
+    }
+
+    function updateInlineClearButtons() {
+        inlineClearFieldIds.forEach((id) => {
+            const wrap = document.querySelector(`[data-inline-wrap="${id}"]`);
+            const node = el(id);
+            if (!wrap || !node) return;
+            const value = String(node.value ?? "").trim();
+            wrap.classList.toggle("has-value", value.length > 0);
+        });
+    }
+
+    function updateQ10Value() {
+        const out = el("q10Value");
+        if (out) out.textContent = String(el("q10").value || "1");
+    }
+
+    function updateQ8AfscUI() {
+        const trigger = el("q8AfscTrigger");
+        const code = String(el("q8Afsc").value || "").trim();
+        const name = String(el("q8AfscName").value || "").trim();
+        trigger.textContent = code ? `${code} - ${name}` : "Select AFSC";
+    }
+
+    function fillExampleAnswers() {
+        el("q0").value = "A. Name";
+        el("q1").value = "76561198012345678";
+        el("q2").value = "2137";
+        el("q3").value = "Playing Arma 3 since 2019. Mostly infantry and medic roles in semi-serious units, some leadership in public ops.";
+        el("q4").value = "Currently in a casual weekend unit. Active there 1-2 times per week.";
+        el("q4dual").checked = true;
+        el("q5").value = "Available most evenings between 19:00 and 23:00 CET, especially Thu-Sun.";
+
+        q6SelectedSlots.clear();
+        for (let slot = 36; slot < 44; slot += 1) q6SelectedSlots.add(q6SlotKey(0, slot)); // Monday 18:00-22:00
+        for (let slot = 38; slot < 46; slot += 1) q6SelectedSlots.add(q6SlotKey(3, slot)); // Thursday 19:00-23:00
+        el("q6Note").value = "Can stay later on weekends if needed.";
+
+        const q7Defaults = new Set(["ACE", "TFAR", "ACRE"]);
+        document.querySelectorAll('input[name="q7Mods"]').forEach((node) => {
+            node.checked = q7Defaults.has(node.value);
+        });
+        el("q7Note").value = "Also used KAT in basic trauma scenarios.";
+
+        el("q8Afsc").value = "1Z2X1";
+        el("q8AfscName").value = "Combat Control";
+        el("q8").value = "Experience with JTAC-style procedures, radio comms, and target coordination in milsim training environments.";
+
+        el("q9").checked = true;
+        el("q10").value = "8";
+        el("q11").checked = true;
+        el("q12").checked = true;
+
+        allIds.forEach((id) => touched.add(id));
+        updateQ8AfscUI();
+        closeQ8AfscDropdown();
+        renderOutput();
+    }
+
+    function closeQ8AfscDropdown() {
+        el("q8AfscSelect").classList.remove("open");
+    }
+
+    function initQ8AfscDropdown() {
+        const select = el("q8AfscSelect");
+        const trigger = el("q8AfscTrigger");
+
+        trigger.addEventListener("click", () => {
+            select.classList.toggle("open");
+        });
+
+        select.querySelectorAll(".discord-select-option").forEach((btn) => {
+            btn.addEventListener("click", () => {
+                el("q8Afsc").value = btn.dataset.afsc || "";
+                el("q8AfscName").value = btn.dataset.afscName || "";
+                markTouched("q8");
+                closeQ8AfscDropdown();
+                updateQ8AfscUI();
+                renderOutput();
+            });
+        });
+
+        document.addEventListener("click", (evt) => {
+            if (!select.contains(evt.target)) closeQ8AfscDropdown();
+        });
+    }
+
+    function renderQ10Scale() {
+        updateQ10Value();
+        const selected = String(el("q10").value || "1");
+        document.querySelectorAll(".q10-box").forEach((btn) => {
+            btn.classList.toggle("active", btn.dataset.q10Score === selected);
+        });
+    }
+
+    function attachFieldTracking(id) {
+        const node = el(id);
+        const isCheckbox = node.type === "checkbox";
+
+        const mark = () => {
+            markTouched(id);
+            renderOutput();
+        };
+
+        if (isCheckbox) {
+            node.addEventListener("change", mark);
+            node.addEventListener("blur", () => {
+                markTouched(id);
+                renderOutput();
+            });
+        } else {
+            node.addEventListener("input", () => {
+                if (node.id === "q0" && node.value.length > 32) {
+                    node.value = node.value.slice(0, 32);
+                }
+                renderOutput();
+            });
+            node.addEventListener("blur", () => {
+                markTouched(id);
+                renderOutput();
+            });
+        }
+    }
+
+    function attachQuestionTracking(questionId, selectors) {
+        selectors.forEach((selector) => {
+            document.querySelectorAll(selector).forEach((node) => {
+                node.addEventListener("input", () => {
+                    markTouched(questionId);
+                    renderOutput();
+                });
+                node.addEventListener("change", () => {
+                    markTouched(questionId);
+                    renderOutput();
+                });
+                node.addEventListener("blur", () => {
+                    markTouched(questionId);
+                    renderOutput();
+                });
+            });
+        });
+    }
+
+    document.querySelectorAll(".inline-clear-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+            const id = btn.dataset.inlineClear;
+            const node = el(id);
+            if (!node) return;
+            node.value = "";
+            if (id === "q8") {
+                el("q8Afsc").value = "";
+                el("q8AfscName").value = "";
+                updateQ8AfscUI();
+            }
+            node.dispatchEvent(new Event("input", {bubbles: true}));
+            node.focus();
+        });
+    });
+
+    document.querySelectorAll(".q10-box").forEach((btn) => {
+        btn.addEventListener("click", () => {
+            el("q10").value = btn.dataset.q10Score;
+            markTouched("q10");
+            renderOutput();
+        });
+    });
+
+    el("fillExampleBtn").addEventListener("click", fillExampleAnswers);
+
+    document.addEventListener("mouseup", () => {
+        q6IsDragging = false;
+        q7IsDragging = false;
+    });
+
+    // Init field listeners
+    ["q0", "q1", "q2", "q3", "q4", "q4dual", "q5", "q9", "q11", "q12"].forEach(attachFieldTracking);
+    attachQuestionTracking("q6", ["#q6Note"]);
+    attachQuestionTracking("q7", ["#q7Note", 'input[name="q7Mods"]']);
+    attachQuestionTracking("q8", ["#q8"]);
+    initQ7DragSelection();
+    initQ8AfscDropdown();
+
+    textFieldIds.forEach(id => {
+        const ta = el(id);
+        autoResizeTextarea(ta);
+        ta.addEventListener("input", () => autoResizeTextarea(ta));
+    });
+
+    updateQ10Value();
+    updateQ8AfscUI();
+
+    // Initial render (no output until valid)
+    renderOutput();
+</script>
+</body>
+</html>
