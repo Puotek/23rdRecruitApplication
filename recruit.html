@@ -757,7 +757,7 @@
 <div class="wrap">
     <h1>23rd Special Tactics Squadron - Recruitment Application</h1>
     <p class="note">
-        Please fill all questions thoroughly than copy the generated output and send it in your recruitment ticket. Your generated answers may be split into multiple messages due to Discord message limit (2000 characters).
+        Please fill all questions thoroughly then copy the generated output and send it in your recruitment ticket. Your generated answers may be split into multiple messages due to Discord message limit (2000 characters).
         <br/> If you encountered any errors or would like to give feedback please contact
         <a class="discord-mention" href="https://discord.com/users/291967371646599169" target="_blank" rel="noopener noreferrer">@Puotek</a>
         on Discord or create an issue on
@@ -805,12 +805,12 @@
             <div>
                 <label for="q2">How many hours do you have in Arma 3?</label>
                 <div class="input-clear-wrap" data-inline-wrap="q2">
-                    <input id="q2" type="number" min="0" step="1" placeholder="1800"/>
+                    <input id="q2" type="number" min="0" step="1" placeholder="2137"/>
                     <button type="button" class="inline-clear-btn" data-inline-clear="q2" aria-label="Clear hours">
                         &times;
                     </button>
                 </div>
-                <span class="desc">Rounded whole number</span>
+                <span class="desc">Whole number</span>
                 <div class="error" id="err-q2"></div>
             </div>
         </div>
@@ -821,7 +821,10 @@
                 <label for="q3">Please fully describe your Arma 3 experience</label>
                 <div class="input-clear-wrap" data-inline-wrap="q3">
                     <textarea id="q3"
-                              placeholder="A3 since 2018. Unit history: casual infantry unit (Rifleman/AR, ~8 months, casual), semi-serious mechanized unit (FTL/SL, ~1 year, semi-serious), serious rotary-focused unit (crew chief/medic, ~6 months, serious). Public modes: lots of I&amp;A (mostly rifleman/medic/SL), some KOH (infantry/vehicle crew), Mike Force (team leader/medic), Public Zeus (player and occasional Zeus helper). Comfortable with infantry tactics, basic leadership, comms discipline, and medical workflow."></textarea>
+                    placeholder="Playing basically since release. At first I played on public I&A servers, mostly as a pilot or squad lead. Later on I played with a group of friends on self-hosted zeus sessions. Than I joined a unit called BRO that hosted a public I&A server. It fell apart due to the owner misusing donations. After that I had a long break from Arma. After coming back I started looking a lot for a long-term unit to play with. I went through quite a lot of different units without staying too long. Currently I found a few units I somewhat actively play with, I will list the below. I also played a lot of Mike Force. Throughout I got a lot of expirience with a ton of different mods and did quite a lot of all the main stuff. I also played a few times in PvP events such as Friday Fight Night.
+Some units I was in:
+- Unit ABC: pretty serious; they played as a MEU and I filled a corpsman role (KAT); left since I was unhappy with the chaos there was and staff
+- Another Unit: hardcore milsim; I was in a trainer and command role; the main mission maker lost motivation and the unit slowly fell apart"></textarea>
                     <button type="button" class="inline-clear-btn" data-inline-clear="q3" aria-label="Clear question 3">
                         &times;
                     </button>
@@ -837,7 +840,10 @@
                 <label for="q4">Are you currently in any Arma 3 units?</label>
                 <div class="input-clear-wrap" data-inline-wrap="q4">
                     <textarea id="q4"
-                              placeholder="Not currently in any Arma 3 unit. Previously left on good terms. No current dual-clanning restrictions."></textarea>
+                              placeholder="Currently in:
+- Arma Addicts: rather casual unit with a very good mission maker; Im in a Staff role there and usually also play as the platoon leader or squad leader on the ground; They play every Sat at ~2000 CET, i try to join regularly;
+- Sigma Security Group: a serious and big group; they play as a PMC; Im in a avg operator role there, but sometimes play as team lead as well, mostly as a medic tho, they use KAT; They dont have a set schedule and op times vary and are dependent on multiple mission makers there, whether they have something and when they want to host;
+- MTF Epsilon-6: a rather small and messy SCP unit; I usually play there as a medic (KAT); I haven't played with them for a while now"></textarea>
                     <button type="button" class="inline-clear-btn" data-inline-clear="q4" aria-label="Clear question 4">
                         &times;
                     </button>
@@ -869,14 +875,18 @@
             <div>
                 <label for="q5">Briefly describe your experience with other milsim games besides Arma 3</label>
                 <div class="input-clear-wrap" data-inline-wrap="q5">
-                    <textarea id="q5" placeholder="Squad: ~300h (rifleman/medic/FTL,coordinated public play).
-Reforger: ~120h (infantry, radio use, modded servers).
-Ready or Not: ~80h (stacking/room clearing, slower CQB play)."></textarea>
+                    <textarea id="q5" placeholder="Yeah:
+- Arma 2: 100h; I dont remember it much
+- Reforger: 65h; I played mostly on public servers on launch, but Im not a fan
+- Squad: 1670h; I was part of a well-known polish clan; Was a high-level staff there; We played in clan-vs-clan games and tournaments; Most of my time was rather in public server, where I played as a squad lead or vehicle crew lead, I also did quite a bit of flying; I left after the ICO updates
+- Post Scriptum/Squad 44: 171h; Similar to normal squad, but was not in any clan; played a lot on public servers as squad lead or vehicle crew
+- Ready or Not: 185h; Played since early access; Pretty experienced with the game and did quite some serious runs
+I also played Door Kickers 2 (126h), Rainbow Six Siege (487h), War Thunder (1762h), CoD Warzone (320h) and some other less known shooters shortly"></textarea>
                     <button type="button" class="inline-clear-btn" data-inline-clear="q5" aria-label="Clear question 5">
                         &times;
                     </button>
                 </div>
-                <span class="desc">Reforger / Squad / RoN (hours, roles, seriousness, etc.).</span>
+                <span class="desc">Reforger / Squad / RoN (hours, roles, etc.).</span>
                 <div class="error" id="err-q5"></div>
             </div>
         </div>
@@ -884,13 +894,14 @@ Ready or Not: ~80h (stacking/room clearing, slower CQB play)."></textarea>
         <!-- Q6 -->
         <div class="row field" id="field-q6">
             <div>
-                <label>Weekly availability (local time)</label>
-                <span class="desc">Select a generic weekly schedule (30-minute blocks). Click or click-and-drag to mark available time.</span>
+                <label>Weekly availability</label>
+                <span class="desc">Select a generic times during the week that you are available to play ops rather regularly. Click or click-and-drag to mark available time.
+                    <br/>Time is in your local time zone in 30 min blocks.</span>
                 <div class="availability-grid" id="q6Grid">
                     <div class="availability-table" id="q6Table"></div>
                 </div>
                 <div class="input-clear-wrap" data-inline-wrap="q6Note">
-                    <textarea id="q6Note" aria-label="Question 6 optional note" placeholder="Optional note: exceptions, weeks you are busy, etc."></textarea>
+                    <textarea id="q6Note" aria-label="Question 6 optional note" placeholder="Optional notes: exceptions, weeks you are busy, disclaimers about irregular work schedule, etc."></textarea>
                     <button type="button" class="inline-clear-btn" data-inline-clear="q6Note" aria-label="Clear note">
                         &times;
                     </button>
@@ -903,7 +914,7 @@ Ready or Not: ~80h (stacking/room clearing, slower CQB play)."></textarea>
         <div class="row field" id="field-q7">
             <div>
                 <label>What gameplay-affecting mods have you played with?</label>
-                <span class="desc">Select all mods you are familiar with. You can describe the extent of you knowledge in the note or mentioned additional mods.</span>
+                <span class="desc">Select all mods you are familiar with. You can describe the extent of you knowledge in the note or mention additional mods.</span>
                 <div class="plain-options" id="q7ModsWrap">
                     <div class="plain-option"><input id="q7Mod-ace" name="q7Mods" type="checkbox" value="ACE"/><label
                             for="q7Mod-ace">ACE</label></div>
@@ -929,7 +940,7 @@ Ready or Not: ~80h (stacking/room clearing, slower CQB play)."></textarea>
                 <div class="input-clear-wrap" data-inline-wrap="q7Note">
                     <textarea id="q7Note"
                               aria-label="Question 7 optional note"
-                              placeholder="Optional note: what you used each mod for, or extra mods not listed."></textarea>
+                              placeholder="Optional note: how expirienced you are with KAT/ACM for example or extra mods you would like to mention that introduce gameplay mechanics and are not listed."></textarea>
                     <button type="button" class="inline-clear-btn" data-inline-clear="q7Note" aria-label="Clear note">
                         &times;
                     </button>
@@ -942,7 +953,7 @@ Ready or Not: ~80h (stacking/room clearing, slower CQB play)."></textarea>
         <div class="row field" id="field-q8">
             <div>
                 <label for="q8">What is your experience with the AFSC you are applying for?</label>
-                <span class="desc">Select AFSC and describe your relevant training/ops exposure and practical confidence for that one role.</span>
+                <span class="desc">Select same AFSC as you sent in <code>#requests</code> and describe your relevant experience in Arma related to it and your confidence in it.</span>
                 <input id="q8Afsc" type="hidden" value=""/>
                 <input id="q8AfscName" type="hidden" value=""/>
                 <div class="discord-select" id="q8AfscSelect">
@@ -981,7 +992,7 @@ Ready or Not: ~80h (stacking/room clearing, slower CQB play)."></textarea>
                     </div>
                 </div>
                 <div class="input-clear-wrap" data-inline-wrap="q8">
-                    <textarea id="q8" placeholder="Describe your experience for the selected AFSC."></textarea>
+                    <textarea id="q8" placeholder="An example note to Rescue Pilot AFSC would be:&#10;I have a lot of flight hours in public servers and I did also do quite a bit of flying in a few units + I practiced a lot my self. I also did most of the Vanilla Time Trials for flying on at least silver. Im confident in my flying skills and am able to fly smooth. I havent really had expirience with 9-lines and that stuff tho. I fly SFM from fully first-person usually. I dont have a stick, I just fly keyboard."></textarea>
                     <button type="button" class="inline-clear-btn" data-inline-clear="q8" aria-label="Clear question 8">
                         &times;
                     </button>
@@ -1060,7 +1071,7 @@ Ready or Not: ~80h (stacking/room clearing, slower CQB play)."></textarea>
     </form>
 
     <div class="card">
-        <p class="out-note">Copy each message and send it in your recruitment ticket. Please avoid modifing the generated output. If you have additional comments send them as additional messages in your ticket.</p>
+        <p class="out-note">Copy each message and send it in your recruitment ticket. Please avoid modifying the generated output. If you have additional comments send them as additional messages in your ticket.</p>
         <div class="actions">
             <button type="button" class="secondary" id="fillExampleBtn">Fill Example Answers</button>
         </div>
@@ -1208,6 +1219,12 @@ Ready or Not: ~80h (stacking/room clearing, slower CQB play)."></textarea>
 
     function formatDiscordTimeTag(unixTs) {
         return `<t:${unixTs}:t>`;
+    }
+
+    function getTodayLocalTimestamp(hour, minute) {
+        const local = new Date();
+        local.setHours(hour, minute, 0, 0);
+        return Math.floor(local.getTime() / 1000);
     }
 
     function getAutoTimezoneLabel() {
@@ -1410,7 +1427,8 @@ Ready or Not: ~80h (stacking/room clearing, slower CQB play)."></textarea>
         const q6Ranges = buildQ6AvailabilityLine();
         const q6Note = sanitizeValue(el("q6Note").value);
         const q6Timezone = getAutoTimezoneLabel();
-        lines.push(`\`6\` ${q6Ranges.join("; ")}; TZ: ${q6Timezone}${q6Note ? `; ${q6Note}` : ""}`);
+        const q6ReferenceTs = formatDiscordTimeTag(getTodayLocalTimestamp(21, 37));
+        lines.push(`\`6\` ${q6Ranges.join("; ")}; TZ: ${q6Timezone}; My \`21:37\` is your ${q6ReferenceTs}${q6Note ? `; ${q6Note}` : ""}`);
 
         const q7Mods = getCheckedValues("q7Mods");
         const q7Note = sanitizeValue(el("q7Note").value);
@@ -1615,29 +1633,38 @@ Ready or Not: ~80h (stacking/room clearing, slower CQB play)."></textarea>
     }
 
     function fillExampleAnswers() {
-        el("q0").value = "A. Name";
-        el("q1").value = "76561198012345678";
-        el("q2").value = "2137";
-        el("q3").value = "Playing Arma 3 since 2019. Mostly infantry and medic roles in semi-serious units, some leadership in public ops.";
-        el("q4").value = "Currently in a casual weekend unit. Active there 1-2 times per week.";
+        const setFromPlaceholder = (id) => {
+            const node = el(id);
+            if (!node) return;
+            const placeholder = node.getAttribute("placeholder");
+            if (typeof placeholder === "string" && placeholder.length > 0) {
+                if (id === "q8") {
+                    const parts = placeholder.split("\n");
+                    node.value = parts.length > 1 ? parts.slice(1).join("\n").trim() : placeholder;
+                } else {
+                    node.value = placeholder;
+                }
+            }
+        };
+
+        ["q0", "q1", "q2", "q3", "q4", "q5", "q8"].forEach(setFromPlaceholder);
+
         el("q4dual").checked = true;
-        el("q5").value = "Available most evenings between 19:00 and 23:00 CET, especially Thu-Sun.";
 
         q6SelectedSlots.clear();
         for (let slot = 36; slot < 44; slot += 1) q6SelectedSlots.add(q6SlotKey(0, slot)); // Monday 18:00-22:00
         for (let slot = 38; slot < 46; slot += 1) q6SelectedSlots.add(q6SlotKey(3, slot)); // Thursday 19:00-23:00
-        el("q6Note").value = "Can stay later on weekends if needed.";
+        for (let slot = 34; slot < 42; slot += 1) q6SelectedSlots.add(q6SlotKey(5, slot)); // Saturday 17:00-21:00
+        el("q6Note").value = "Usually free in the evenings. Some weekdays may vary due to work, but weekends are mostly consistent.";
 
         const q7Defaults = new Set(["ACE", "TFAR", "ACRE"]);
         document.querySelectorAll('input[name="q7Mods"]').forEach((node) => {
             node.checked = q7Defaults.has(node.value);
         });
-        el("q7Note").value = "Also used KAT in basic trauma scenarios.";
+        el("q7Note").value = "I haven't played with ACRE since long ago, but should be able to use it. Im very familiar with KAT, but ACM only on a basic level.";
 
-        el("q8Afsc").value = "1Z2X1";
-        el("q8AfscName").value = "Combat Control";
-        el("q8").value = "Experience with JTAC-style procedures, radio comms, and target coordination in milsim training environments.";
-
+        el("q8Afsc").value = "11HX";
+        el("q8AfscName").value = "Rescue Pilot";
         el("q9").checked = true;
         el("q10").value = "8";
         el("q11").checked = true;
